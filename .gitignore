@@ -1,0 +1,16 @@
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+# Local History for <a href="https://www.jcchouinard.com/python-with-vscode/">Visual Studio Code</a>
+.history/
+
+# Environments
+.env
+
+# Npm packages
+/backend/node_modules/
+/frontend/node_modules/
