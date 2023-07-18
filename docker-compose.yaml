@@ -1,0 +1,41 @@
+version: "3"
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    ports:
+      - "3001:3001"
+    expose:
+      - "3001"
+    depends_on:
+      - database
+    networks:
+      - postgres
+    volumes:
+    - db-data:/data/postgres
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    expose:
+      - "3000"
+    depends_on:
+      - backend
+  database:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file:
+      - docker.env
+    networks:
+      - postgres
+volumes: 
+  db-data:
+networks:
+  postgres:
+    driver: bridge
+
