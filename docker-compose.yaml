@@ -12,8 +12,10 @@ services:
       - database
     networks:
       - postgres
-    volumes:
-    - db-data:/data/postgres
+    # volumes:
+    #   - db-data:/data/postgres
+    env_file:
+      - docker.env
   frontend:
     build:
       dockerfile: Dockerfile
@@ -33,8 +35,8 @@ services:
       - docker.env
     networks:
       - postgres
-volumes: 
-  db-data:
+# volumes: 
+#   db-data:
 networks:
   postgres:
     driver: bridge
