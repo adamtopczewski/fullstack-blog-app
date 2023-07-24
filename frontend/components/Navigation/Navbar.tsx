@@ -3,15 +3,15 @@ import NavLink from "./NavLink"
 export default function Navbar() {
     return (
         <nav>
-            <ul className="flex gap-4 text-sm">
+            <ul className="flex gap-6 text-sm">
                 <li>
                     <NavLink />
                 </li>
                 <li>
-                    <NavLink />
+                    <NavLink to="posts" label="Posty" />
                 </li>
                 <li>
-                    <NavLink />
+                    <NavLink to="about" label="O mnie" />
                 </li>
             </ul>
         </nav>

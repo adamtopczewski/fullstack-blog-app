@@ -1,1 +1,1 @@
-export const AUTHORS_NAME = 'Adam'
+export const AUTHORS_NAME = 'Adam';
