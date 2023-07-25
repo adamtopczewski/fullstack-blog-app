@@ -1,9 +1,17 @@
+'use client';
+// Todo: public cleanup (delete old border designs); change to server-side component
 export default function Home() {
-
   return (
     <>
     <h1>h1</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. In vel itaque optio enim eum beatae necessitatibus labore illo libero consectetur doloribus doloremque, facere totam expedita! Excepturi, quis. Nobis, officia tempore.
+    <style jsx>{`
+      .custom-border {
+        border: 20px solid transparent;
+        padding: 8px;
+        border-image: url('/hash-border-ver-2_1.webp') 27 round;
+      }
+    `}</style>
+    <p className="custom-border">Lorem ipsum dolor sit amet consectetur adipisicing elit. In vel itaque optio enim eum beatae necessitatibus labore illo libero consectetur doloribus doloremque, facere totam expedita! Excepturi, quis. Nobis, officia tempore.
     Assumenda doloribus aperiam architecto eaque perferendis quis deleniti nostrum laboriosam at soluta, blanditiis impedit sapiente dolor ullam non quidem modi, repellendus nemo reiciendis iste expedita facilis obcaecati? Sapiente, recusandae eius.
     Nobis sunt ipsam praesentium neque id nisi sequi, facilis, temporibus pariatur iusto necessitatibus laboriosam excepturi expedita nostrum dignissimos. Nisi aperiam, iusto a sapiente neque impedit at recusandae voluptatum delectus illo.
     Eius delectus ullam distinctio maiores vel nemo dolores deserunt id, illo hic ut corrupti accusantium, inventore quam suscipit sit nihil itaque optio. Maxime quo, quam distinctio ab est soluta voluptate.
