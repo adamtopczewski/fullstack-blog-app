@@ -1,5 +1,7 @@
+import Header from '@/components/Navigation/Header'
 import './globals.css'
 import { Source_Code_Pro } from 'next/font/google'
+import Navbar from '@/components/Navigation/Navbar'
 
 const source_code_pro = Source_Code_Pro({ subsets: ['latin'] })
 
@@ -15,7 +17,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={source_code_pro.className}>{children}</body>
+      <body className={source_code_pro.className}>
+        <Header>
+          <Navbar />
+        </Header>
+        <main className="container mx-auto mt-10 px-2">
+          {children}
+        </main>
+      </body>
     </html>
   )
 }
