@@ -1,1 +1,1 @@
-declare module 'image-convert-ascii';
+declare module "image-convert-ascii";
