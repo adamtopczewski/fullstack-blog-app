@@ -1,3 +1,5 @@
+# Ignore artifacts:
+
 # VSCode
 .vscode/
 /.vscode/*
@@ -6,13 +8,21 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+frontend/.vscode
 # Local History for <a href="https://www.jcchouinard.com/python-with-vscode/">Visual Studio Code</a>
 .history/
 
 # Environments
 .env
 
-# Npm packages
-node_modules
-/backend/node_modules/
-/frontend/node_modules/
+# Packages and builds
+backend/dist
+backend/node_modules
+frontend/.next
+frontend/node_modules
+
+# Configs 
+frontend/*.config.js
+frontend/tsconfig.json
+frontend/package.json
+frontend/package-lock.json
