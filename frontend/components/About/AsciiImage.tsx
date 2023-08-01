@@ -29,7 +29,8 @@ export default function AsciiImage({baseImageWidth, baseImageHeight, baseImagePa
                     width={baseImageWidth} 
                     height={baseImageHeight} 
                     crossOrigin="anonymous" 
-                    className="hidden" />
+                    className="hidden"
+                    />
             </div>
         </>
     )
