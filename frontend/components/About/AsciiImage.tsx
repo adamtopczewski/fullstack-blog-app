@@ -1,40 +1,39 @@
 "use client";
 import Convert from "image-convert-ascii";
 import { IAsciiImageProps } from "@/types/About/types";
-import { RefCallback, useCallback, useRef } from "react";
-
-//TODO move to @/hooks
-const useCustomImageRef = (): [RefCallback<HTMLImageElement>] => {
-  const imageRef = useRef<HTMLImageElement | null>(null);
-  const setRef: RefCallback<HTMLImageElement> = useCallback((node) => {
-    //TODO refactor hardcoded values
-    new Convert("js-baseImage", "js-preElement-ASCII", 111, 141);
-    imageRef.current = node;
-  }, []);
-  return [setRef];
-};
+import { useRef } from "react";
+import Image from "next/image";
 
 export default function AsciiImage({
   baseImageWidth,
   baseImageHeight,
   baseImagePath,
 }: IAsciiImageProps) {
-  const [imageRef] = useCustomImageRef();
+  const imageRef = useRef<HTMLImageElement>(null);
+  const preformatedRef = useRef<HTMLPreElement>(null);
+
+  const processImage = async () => {
+    if (imageRef.current && preformatedRef.current) {
+      const asciiWidth = 111;
+      const asciiHeight = 141;
+      await new Convert(imageRef.current.id, preformatedRef.current.id, asciiWidth, asciiHeight);
+      imageRef.current.className = 'hidden';
+    }
+  }
 
   return (
     <>
       <div className="flex text-[3px]">
-        <pre id="js-preElement-ASCII"></pre>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <pre ref={preformatedRef} id="js-ASCII-target" className="cursor-help hover:text-blue-400 hover:bg-red-400 hover:bg-opacity-30"></pre>
+        <Image
           ref={imageRef}
-          alt="ASCII base image"
-          id="js-baseImage"
+          className="invisible"
           src={baseImagePath}
           width={baseImageWidth}
           height={baseImageHeight}
-          crossOrigin="anonymous"
-          className="hidden"
+          alt="Image base for ASCII"
+          id="js-baseImage"
+          onLoadingComplete={() => processImage()}
         />
       </div>
     </>
