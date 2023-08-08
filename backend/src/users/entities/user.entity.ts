@@ -15,7 +15,7 @@ class User {
   name: string;
 
   @Column()
-  lastname: string;
+  lastName: string;
 }
 
 export default User;
