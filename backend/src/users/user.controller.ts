@@ -5,7 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './user.service';
 
 @Controller('users')
-export class UsersContorller {
+export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   // Temporary endopints; finally should be in auth module;
@@ -27,3 +27,5 @@ export class UsersContorller {
     return this.usersService.remove(Number(id));
   }
 }
+
+export default UsersController;

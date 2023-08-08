@@ -56,3 +56,5 @@ export class UsersService {
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 }
+
+export default UsersService;
