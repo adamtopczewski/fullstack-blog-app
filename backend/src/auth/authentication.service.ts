@@ -6,6 +6,9 @@ import PostgresErrorCode from 'src/database/postgresErrorCode.enum';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenPayload } from './tokenPayload.interface';
+import WrongCredentialsException from './exception/wrongCredentials.exception';
+import SomethingWentWrongException from 'src/utils/exception/somethingWentWrong.exception';
+import EmailAlreadyExistsException from './exception/emailAlreadyExists.exception';
 
 @Injectable()
 export class AuthenticationService {
@@ -22,20 +25,13 @@ export class AuthenticationService {
         ...registrationData,
         password: hashedPassword,
       });
-      console.log(createdUser);
       createdUser.password = undefined;
       return createdUser;
     } catch (error) {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
-        throw new HttpException(
-          'User with that email already exists',
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new EmailAlreadyExistsException();
       }
-      throw new HttpException(
-        'Something went wrong' + error,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new SomethingWentWrongException();
     }
   }
 
@@ -46,10 +42,7 @@ export class AuthenticationService {
       user.password = undefined;
       return user;
     } catch (error) {
-      throw new HttpException(
-        'Wrong credentials provided',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new WrongCredentialsException();
     }
   }
 
@@ -59,10 +52,7 @@ export class AuthenticationService {
       hashedPassword,
     );
     if (!isPasswordMatching) {
-      throw new HttpException(
-        'Wrong credentials provided',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new WrongCredentialsException();
     }
   }
 

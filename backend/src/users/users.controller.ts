@@ -16,7 +16,7 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // Temporary endopints; finally should be in auth module;
+  // Change to admin only routes or refactor to admin module
   @Get()
   async getAllUsers() {
     return this.usersService.findAll();

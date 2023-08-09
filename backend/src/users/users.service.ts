@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import User from './entities/user.entity';
 import { Repository } from 'typeorm';
+import UserNotFoundException from './exception/userNotFound.exception';
 
 @Injectable()
 export class UsersService {
@@ -11,8 +12,6 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-
-  //Todo: Refactor HTTP Exception
 
   async create(userData: CreateUserDto) {
     const user = await this.userRepository.create(userData);
@@ -26,13 +25,13 @@ export class UsersService {
     if (updatedUser) {
       return updatedUser;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new UserNotFoundException();
   }
 
   async remove(id: number) {
     const userDeleteResponse = await this.userRepository.delete(id);
     if (!userDeleteResponse.affected) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new UserNotFoundException();
     }
   }
 
@@ -45,7 +44,7 @@ export class UsersService {
     if (user) {
       return user;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new UserNotFoundException();
   }
 
   async findByEmail(email: string) {
@@ -53,7 +52,7 @@ export class UsersService {
     if (user) {
       return user;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new UserNotFoundException();
   }
 }
 
