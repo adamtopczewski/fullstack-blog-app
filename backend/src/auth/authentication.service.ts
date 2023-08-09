@@ -1,12 +1,19 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import UsersService from 'src/users/user.service';
+import UsersService from 'src/users/users.service';
 import RegisterDto from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import PostgresErrorCode from 'src/database/postgresErrorCode.enum';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { TokenPayload } from './tokenPayload.interface';
 
 @Injectable()
 export class AuthenticationService {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async register(registrationData: RegisterDto) {
     const hashedPassword = await bcrypt.hash(registrationData.password, 10);
@@ -15,6 +22,7 @@ export class AuthenticationService {
         ...registrationData,
         password: hashedPassword,
       });
+      console.log(createdUser);
       createdUser.password = undefined;
       return createdUser;
     } catch (error) {
@@ -25,7 +33,7 @@ export class AuthenticationService {
         );
       }
       throw new HttpException(
-        'Something went wrong',
+        'Something went wrong' + error,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -56,6 +64,18 @@ export class AuthenticationService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  getCookieWithJwtToken(userId: number) {
+    const payload: TokenPayload = { userId };
+    const token = this.jwtService.sign(payload);
+    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+      'JWT_EXPIRATION_TIME',
+    )}`;
+  }
+
+  getCookieForLogout() {
+    return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
   }
 }
 

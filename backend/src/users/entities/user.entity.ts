@@ -11,10 +11,10 @@ class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastName: string;
 }
 

@@ -1,14 +1,27 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { FindOneParams } from 'src/utils/findOneParams';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersService } from './user.service';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   // Temporary endopints; finally should be in auth module;
+  @Get()
+  async getAllUsers() {
+    return this.usersService.findAll();
+  }
+
   @Post()
   async createUser(@Body() user: CreateUserDto) {
     return this.usersService.create(user);
