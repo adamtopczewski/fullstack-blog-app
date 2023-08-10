@@ -39,7 +39,6 @@ export class AuthenticationService {
     try {
       const user = await this.userService.findByEmail(email);
       await this.verifyPassword(plainTextPassword, user.password);
-      user.password = undefined;
       return user;
     } catch (error) {
       throw new WrongCredentialsException();
