@@ -5,10 +5,15 @@ import { PostsModule } from './posts/posts.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import * as Joi from 'joi';
+import { UsersModule } from './users/users.module';
+import { AuthenticationModule } from './auth/authentication.module';
 
 @Module({
   imports: [
+    DatabaseModule,
     PostsModule,
+    UsersModule,
+    AuthenticationModule,
     ConfigModule.forRoot({
       validationSchema: Joi.object({
         POSTGRES_HOST: Joi.string().required(),
@@ -17,9 +22,10 @@ import * as Joi from 'joi';
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_DB: Joi.string().required(),
         PORT: Joi.number(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_EXPIRATION_TIME: Joi.number().required(),
       }),
     }),
-    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

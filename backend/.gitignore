@@ -3,3 +3,4 @@ dist
 
 ## IDE specific
 .vscode
+docker.env
