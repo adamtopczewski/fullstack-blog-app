@@ -9,7 +9,7 @@ import {
 export default async function About() {
   return (
     <>
-      <Suspense>
+      <Suspense fallback={'Loading author...'}>
         <AsciiImage
           baseImageWidth={ASCII_IMAGE_WIDTH}
           baseImageHeight={ASCII_IMAGE_HEIGHT}
