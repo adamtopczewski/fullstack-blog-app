@@ -15,6 +15,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  //TODO public endpoints for posts with pagination
   @Post()
   create(@Body() createPostDto: CreatePostDto) {
     return this.postsService.create(createPostDto);
@@ -26,8 +27,13 @@ export class PostsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+  findById(@Param('id') id: string) {
+    return this.postsService.findById(+id);
+  }
+
+  @Get('/slug/:slug')
+  findBySlug(@Param('slug') slug: string) {
+    return this.postsService.findBySlug(slug);
   }
 
   @Patch(':id')
