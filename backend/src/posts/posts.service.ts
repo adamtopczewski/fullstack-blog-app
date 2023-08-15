@@ -100,9 +100,11 @@ export class PostsService {
   }
 
   async isPostAuthor(id: number, author: User) {
-    // There are cases that there is no posts, needs refactor
-    const post = await this.postRepository.findOneBy({ id, author });
-    if (post) {
+    const post = await this.postRepository.findOneBy({ id });
+    if (!post) {
+      throw new PostNotFoundException(id);
+    }
+    if (post.author === author) {
       return true;
     }
     throw new HttpException(
