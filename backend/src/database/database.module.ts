@@ -18,6 +18,7 @@ import Post from 'src/posts/entities/post.entity';
         database: configService.get('POSTGRES_DB'),
         entities: [User, Post],
         synchronize: true,
+        autoLoadEntities: true,
       }),
     }),
   ],
