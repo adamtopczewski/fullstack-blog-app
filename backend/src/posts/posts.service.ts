@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +11,7 @@ import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import PostNotFoundException from './exception/postNotFound.exception';
 import PostWithSlugNotFoundException from './exception/postWithSlugNotFound.exception';
+import User from 'src/users/entities/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -13,18 +19,19 @@ export class PostsService {
     @InjectRepository(Post) private postRepository: Repository<Post>,
   ) {}
 
-  async create(postData: CreatePostDto) {
-    // TODO add user as Author after defining relationship in entity
+  async create(postData: CreatePostDto, user: User) {
     const slug = await this.generateSlug(postData.title);
     const post = this.postRepository.create({
       ...postData,
       slug,
+      author: user,
     });
     await this.postRepository.save(post);
     return post;
   }
 
-  async update(id: number, postData: UpdatePostDto) {
+  async update(id: number, postData: UpdatePostDto, author: User) {
+    await this.isPostAuthor(id, author);
     if (!postData.title) {
       await this.postRepository.update(id, postData);
     } else {
@@ -50,11 +57,14 @@ export class PostsService {
   }
 
   async findAll() {
-    return await this.postRepository.find();
+    return await this.postRepository.find({ relations: ['author'] });
   }
 
   async findById(id: number) {
-    const post = this.postRepository.findOneBy({ id });
+    const post = this.postRepository.findOne({
+      where: { id },
+      relations: ['author'],
+    });
     if (post) {
       return post;
     }
@@ -62,11 +72,43 @@ export class PostsService {
   }
 
   async findBySlug(slug: string) {
-    const post = this.postRepository.findOneBy({ slug });
+    const post = this.postRepository.findOne({
+      where: {
+        slug,
+      },
+      relations: ['author'],
+    });
     if (post) {
       return post;
     }
     throw new PostWithSlugNotFoundException(slug);
+  }
+
+  async findByAuthor(author) {
+    const post = this.postRepository.find({
+      where: {
+        author,
+      },
+      relations: ['author'],
+    });
+    if (post) {
+      return post;
+    }
+    throw new NotFoundException(
+      `There were no post for user with id ${author.id}`,
+    );
+  }
+
+  async isPostAuthor(id: number, author: User) {
+    // There are cases that there is no posts, needs refactor
+    const post = await this.postRepository.findOneBy({ id, author });
+    if (post) {
+      return true;
+    }
+    throw new HttpException(
+      "You don't have permission to edit this post",
+      HttpStatus.UNAUTHORIZED,
+    );
   }
 
   generateSlug(title: string) {

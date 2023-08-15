@@ -1,9 +1,11 @@
+import User from 'src/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -40,6 +42,9 @@ export class Post {
     type: 'boolean',
   })
   published: boolean;
+
+  @ManyToOne(() => User, (author: User) => author.posts)
+  author: User;
 }
 
 export default Post;
