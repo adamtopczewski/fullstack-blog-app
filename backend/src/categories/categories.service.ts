@@ -1,13 +1,8 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { slugify } from 'src/utils/helpers';
 import Category from './entities/category.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import UpdateCategoryDto from './dto/update-category.dto';
 
@@ -18,6 +13,7 @@ export class CategoriesService {
     private categoryRepository: Repository<Category>,
   ) {}
 
+  // Todo add UniqueViolation handling && PostNotFound exception
   async create(categoryData: CreateCategoryDto) {
     const slug = this.generateSlug(categoryData.name);
     const category = await this.categoryRepository.create({
@@ -63,6 +59,21 @@ export class CategoriesService {
       return category;
     }
     throw new NotFoundException('Post not found');
+  }
+
+  async getCategoriesByIds(categories: number[]): Promise<Category[]> {
+    const categoriesByIds = await this.categoryRepository.find({
+      where: {
+        id: In(categories),
+      },
+    });
+
+    if (categoriesByIds.length === categories.length) {
+      return categoriesByIds;
+    }
+    throw new NotFoundException(
+      'Could not find categories based on provided ids.',
+    );
   }
 
   generateSlug(name) {

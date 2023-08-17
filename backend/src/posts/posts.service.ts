@@ -13,33 +13,44 @@ import PostNotFoundException from './exception/postNotFound.exception';
 import PostWithSlugNotFoundException from './exception/postWithSlugNotFound.exception';
 import User from 'src/users/entities/user.entity';
 import { slugify } from 'src/utils/helpers';
+import CategoriesService from 'src/categories/categories.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Post) private postRepository: Repository<Post>,
+    private readonly categoriesService: CategoriesService,
   ) {}
 
+  // Todo add UniqueViolation handling
   async create(postData: CreatePostDto, user: User) {
     const slug = await this.generateSlug(postData.title);
+    const categories =
+      postData.categories &&
+      (await this.categoriesService.getCategoriesByIds(postData.categories));
     const post = this.postRepository.create({
       ...postData,
       slug,
       author: user,
+      categories,
     });
     await this.postRepository.save(post);
     return post;
   }
 
   async update(id: number, postData: UpdatePostDto, author: User) {
+    const categories =
+      postData.categories &&
+      (await this.categoriesService.getCategoriesByIds(postData.categories));
     await this.isPostAuthor(id, author);
     if (!postData.title) {
-      await this.postRepository.update(id, postData);
+      await this.postRepository.update(id, { ...postData, categories });
     } else {
       const slug = await this.generateSlug(postData.title);
       await this.postRepository.update(id, {
         ...postData,
         slug,
+        categories,
       });
     }
 
