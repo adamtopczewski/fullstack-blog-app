@@ -12,6 +12,7 @@ import { Post } from './entities/post.entity';
 import PostNotFoundException from './exception/postNotFound.exception';
 import PostWithSlugNotFoundException from './exception/postWithSlugNotFound.exception';
 import User from 'src/users/entities/user.entity';
+import { slugify } from 'src/utils/helpers';
 
 @Injectable()
 export class PostsService {
@@ -114,15 +115,6 @@ export class PostsService {
   }
 
   generateSlug(title: string) {
-    /* slugify implementation: https://gist.github.com/codeguy/6684588?permalink_comment_id=3243980#gistcomment-3243980 */
-    const slug: string = title
-      .toString()
-      .normalize('NFD') // split an accented letter in the base letter and the accent
-      .replace(/[\u0300-\u036f]/g, '') // remove all previously split accents
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9 ]/g, '') // remove all chars not letters, numbers and spaces (to be replaced)
-      .replace(/\s+/g, '-');
-    return slug;
+    return slugify(title);
   }
 }

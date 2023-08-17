@@ -7,12 +7,14 @@ import { DatabaseModule } from './database/database.module';
 import * as Joi from 'joi';
 import { UsersModule } from './users/users.module';
 import { AuthenticationModule } from './auth/authentication.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
     DatabaseModule,
     PostsModule,
     UsersModule,
+    CategoriesModule,
     AuthenticationModule,
     ConfigModule.forRoot({
       validationSchema: Joi.object({
