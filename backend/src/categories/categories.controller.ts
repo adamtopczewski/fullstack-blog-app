@@ -10,6 +10,7 @@ import {
 import CategoriesService from './categories.service';
 import UpdateCategoryDto from './dto/update-category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { FindOneBySlugParams, FindOneParams } from 'src/utils/findOneParams';
 
 @Controller('categories')
 export class CategoriesController {
@@ -26,25 +27,25 @@ export class CategoriesController {
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
+  findById(@Param('id') { id }: FindOneParams) {
     return this.categoriesService.findById(+id);
   }
 
   @Get('/slug/:slug')
-  findBySlug(@Param('slug') slug: string) {
+  findBySlug(@Param('slug') { slug }: FindOneBySlugParams) {
     return this.categoriesService.findBySlug(slug);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') { id }: FindOneParams,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
     return this.categoriesService.update(+id, updateCategoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') { id }: FindOneParams) {
     return this.categoriesService.remove(+id);
   }
 }

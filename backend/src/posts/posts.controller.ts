@@ -14,6 +14,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import JwtAuthenticationGuard from 'src/auth/jwtAuthentication.guard';
 import RequestWithUser from 'src/auth/requestWithUser.interface';
+import { FindOneBySlugParams, FindOneParams } from 'src/utils/findOneParams';
 
 @Controller('posts')
 export class PostsController {
@@ -35,19 +36,19 @@ export class PostsController {
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
+  findById(@Param('id') { id }: FindOneParams) {
     return this.postsService.findById(+id);
   }
 
   @Get('/slug/:slug')
-  findBySlug(@Param('slug') slug: string) {
+  findBySlug(@Param('slug') { slug }: FindOneBySlugParams) {
     return this.postsService.findBySlug(slug);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthenticationGuard)
   update(
-    @Param('id') id: string,
+    @Param('id') { id }: FindOneParams,
     @Body() updatePostDto: UpdatePostDto,
     @Req() request: RequestWithUser,
   ) {
@@ -55,7 +56,7 @@ export class PostsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') { id }: FindOneParams) {
     return this.postsService.remove(+id);
   }
 }
