@@ -1,8 +1,8 @@
 import {
-  HttpException,
-  HttpStatus,
+  BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -14,6 +14,8 @@ import PostWithSlugNotFoundException from './exception/postWithSlugNotFound.exce
 import User from 'src/users/entities/user.entity';
 import { slugify } from 'src/utils/helpers';
 import CategoriesService from 'src/categories/categories.service';
+import PostgresErrorCode from 'src/database/postgresErrorCode.enum';
+import SomethingWentWrongException from 'src/utils/exception/somethingWentWrong.exception';
 
 @Injectable()
 export class PostsService {
@@ -22,20 +24,28 @@ export class PostsService {
     private readonly categoriesService: CategoriesService,
   ) {}
 
-  // Todo add UniqueViolation handling
   async create(postData: CreatePostDto, user: User) {
     const slug = await this.generateSlug(postData.title);
-    const categories =
-      postData.categories &&
-      (await this.categoriesService.getCategoriesByIds(postData.categories));
-    const post = this.postRepository.create({
-      ...postData,
-      slug,
-      author: user,
-      categories,
-    });
-    await this.postRepository.save(post);
-    return post;
+    try {
+      const categories =
+        postData.categories &&
+        (await this.categoriesService.getCategoriesByIds(postData.categories));
+      const post = this.postRepository.create({
+        ...postData,
+        slug,
+        author: user,
+        categories,
+      });
+      await this.postRepository.save(post);
+      return post;
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new BadRequestException(
+          'Post with provided title already exists.',
+        );
+      }
+      throw new SomethingWentWrongException();
+    }
   }
 
   async update(id: number, postData: UpdatePostDto, author: User) {
@@ -119,9 +129,8 @@ export class PostsService {
     if (post.author === author) {
       return true;
     }
-    throw new HttpException(
+    throw new UnauthorizedException(
       "You don't have permission to edit this post",
-      HttpStatus.UNAUTHORIZED,
     );
   }
 
