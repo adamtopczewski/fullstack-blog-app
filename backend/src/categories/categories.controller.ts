@@ -6,17 +6,21 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import CategoriesService from './categories.service';
 import UpdateCategoryDto from './dto/update-category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { FindOneBySlugParams, FindOneParams } from 'src/utils/findOneParams';
+import Role from 'src/users/role.enum';
+import RoleGuard from 'src/auth/role.guard';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @UseGuards(RoleGuard(Role.Admin))
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
   }
@@ -37,6 +41,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @UseGuards(RoleGuard(Role.Admin))
   update(
     @Param('id') { id }: FindOneParams,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -45,6 +50,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @UseGuards(RoleGuard(Role.Admin))
   remove(@Param('id') { id }: FindOneParams) {
     return this.categoriesService.remove(+id);
   }
