@@ -12,6 +12,8 @@ import RegisterDto from './dto/register.dto';
 import RequestWithUser from './requestWithUser.interface';
 import { LocalAuthenticationGuard } from './localAuthentication.guard';
 import JwtAuthenticationGuard from './jwtAuthentication.guard';
+import RoleGuard from './role.guard';
+import Role from 'src/users/role.enum';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -25,6 +27,7 @@ export class AuthenticationController {
   }
 
   @Post('register')
+  @UseGuards(RoleGuard(Role.Admin))
   async register(@Body() registrationData: RegisterDto) {
     return this.authenticationService.register(registrationData);
   }
