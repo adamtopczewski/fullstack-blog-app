@@ -20,7 +20,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  // @UseGuards(RoleGuard(Role.Admin))
+  @UseGuards(RoleGuard(Role.Admin))
   async getAllUsers() {
     return this.usersService.findAll();
   }
