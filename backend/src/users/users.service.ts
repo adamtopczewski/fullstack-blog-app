@@ -25,7 +25,7 @@ export class UsersService {
       ...userData,
       roles: [Role.Admin],
     });
-    await this.userRepository.save(admin);
+    await this.userRepository.upsert(admin, ['email']);
     return admin;
   }
 

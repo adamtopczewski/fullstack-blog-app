@@ -10,10 +10,13 @@ import { PostsModule } from 'src/posts/posts.module';
 import UsersService from 'src/users/users.service';
 import { PostsService } from 'src/posts/posts.service';
 import * as Joi from 'joi';
+import { CategoriesModule } from 'src/categories/categories.module';
+import CategoriesService from 'src/categories/categories.service';
+import Category from 'src/categories/entities/category.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Post]),
+    TypeOrmModule.forFeature([User, Post, Category]),
     DatabaseModule,
     ConfigModule.forRoot({
       validationSchema: Joi.object({
@@ -29,7 +32,14 @@ import * as Joi from 'joi';
     }),
     UsersModule,
     PostsModule,
+    CategoriesModule,
   ],
-  providers: [Seeder, UsersService, PostsService, ConfigService],
+  providers: [
+    Seeder,
+    UsersService,
+    PostsService,
+    ConfigService,
+    CategoriesService,
+  ],
 })
 export class SeederModule {}

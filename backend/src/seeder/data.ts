@@ -9,6 +9,8 @@ export const seedData = {
 export const testAdmin = {
   email: 'admin@admin.com',
   password: 'admin123',
+  name: 'Test',
+  lastName: 'User',
 };
 
 export const testUser = {
