@@ -1,4 +1,4 @@
-import { IsBoolean, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class CreatePostDto {
   @IsString()
@@ -12,4 +12,8 @@ export class CreatePostDto {
 
   @IsBoolean()
   published: boolean;
+
+  @IsArray()
+  @IsOptional()
+  categories: number[];
 }

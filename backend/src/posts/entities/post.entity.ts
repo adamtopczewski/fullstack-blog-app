@@ -1,3 +1,4 @@
+import Category from 'src/categories/entities/category.entity';
 import User from 'src/users/entities/user.entity';
 import {
   Entity,
@@ -6,6 +7,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -13,7 +16,7 @@ export class Post {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   title: string;
 
   @Column()
@@ -45,6 +48,13 @@ export class Post {
 
   @ManyToOne(() => User, (author: User) => author.posts)
   author: User;
+
+  @ManyToMany(() => Category, (category: Category) => category.posts, {
+    eager: true,
+    nullable: true,
+  })
+  @JoinTable()
+  categories: Category[];
 }
 
 export default Post;

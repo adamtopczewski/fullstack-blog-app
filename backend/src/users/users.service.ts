@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import User from './entities/user.entity';
 import { Repository } from 'typeorm';
 import UserNotFoundException from './exception/userNotFound.exception';
+import Role from './role.enum';
 
 @Injectable()
 export class UsersService {
@@ -14,9 +15,18 @@ export class UsersService {
   ) {}
 
   async create(userData: CreateUserDto) {
-    const user = await this.userRepository.create(userData);
+    const user = this.userRepository.create(userData);
     await this.userRepository.save(user);
     return user;
+  }
+
+  async createAdmin(userData: CreateUserDto) {
+    const admin = this.userRepository.create({
+      ...userData,
+      roles: [Role.Admin],
+    });
+    await this.userRepository.save(admin);
+    return admin;
   }
 
   async update(id: number, userData: UpdateUserDto) {

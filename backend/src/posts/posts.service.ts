@@ -1,8 +1,8 @@
 import {
-  HttpException,
-  HttpStatus,
+  BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -12,33 +12,55 @@ import { Post } from './entities/post.entity';
 import PostNotFoundException from './exception/postNotFound.exception';
 import PostWithSlugNotFoundException from './exception/postWithSlugNotFound.exception';
 import User from 'src/users/entities/user.entity';
+import { slugify } from 'src/utils/helpers';
+import CategoriesService from 'src/categories/categories.service';
+import PostgresErrorCode from 'src/database/postgresErrorCode.enum';
+import SomethingWentWrongException from 'src/utils/exception/somethingWentWrong.exception';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Post) private postRepository: Repository<Post>,
+    private readonly categoriesService: CategoriesService,
   ) {}
 
   async create(postData: CreatePostDto, user: User) {
     const slug = await this.generateSlug(postData.title);
-    const post = this.postRepository.create({
-      ...postData,
-      slug,
-      author: user,
-    });
-    await this.postRepository.save(post);
-    return post;
+    try {
+      const categories =
+        postData.categories &&
+        (await this.categoriesService.getCategoriesByIds(postData.categories));
+      const post = this.postRepository.create({
+        ...postData,
+        slug,
+        author: user,
+        categories,
+      });
+      await this.postRepository.save(post);
+      return post;
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new BadRequestException(
+          'Post with provided title already exists.',
+        );
+      }
+      throw new SomethingWentWrongException();
+    }
   }
 
   async update(id: number, postData: UpdatePostDto, author: User) {
+    const categories =
+      postData.categories &&
+      (await this.categoriesService.getCategoriesByIds(postData.categories));
     await this.isPostAuthor(id, author);
     if (!postData.title) {
-      await this.postRepository.update(id, postData);
+      await this.postRepository.update(id, { ...postData, categories });
     } else {
       const slug = await this.generateSlug(postData.title);
       await this.postRepository.update(id, {
         ...postData,
         slug,
+        categories,
       });
     }
 
@@ -107,22 +129,12 @@ export class PostsService {
     if (post.author === author) {
       return true;
     }
-    throw new HttpException(
+    throw new UnauthorizedException(
       "You don't have permission to edit this post",
-      HttpStatus.UNAUTHORIZED,
     );
   }
 
   generateSlug(title: string) {
-    /* slugify implementation: https://gist.github.com/codeguy/6684588?permalink_comment_id=3243980#gistcomment-3243980 */
-    const slug: string = title
-      .toString()
-      .normalize('NFD') // split an accented letter in the base letter and the accent
-      .replace(/[\u0300-\u036f]/g, '') // remove all previously split accents
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9 ]/g, '') // remove all chars not letters, numbers and spaces (to be replaced)
-      .replace(/\s+/g, '-');
-    return slug;
+    return slugify(title);
   }
 }

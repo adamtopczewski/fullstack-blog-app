@@ -12,8 +12,10 @@ import {
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import JwtAuthenticationGuard from 'src/auth/jwtAuthentication.guard';
 import RequestWithUser from 'src/auth/requestWithUser.interface';
+import { FindOneBySlugParams, FindOneParams } from 'src/utils/findOneParams';
+import Role from 'src/users/role.enum';
+import RoleGuard from 'src/auth/role.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -21,7 +23,7 @@ export class PostsController {
 
   //TODO public endpoints for posts with pagination
   @Post()
-  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(RoleGuard(Role.Writer))
   create(
     @Body() createPostDto: CreatePostDto,
     @Req() request: RequestWithUser,
@@ -35,27 +37,30 @@ export class PostsController {
   }
 
   @Get(':id')
-  findById(@Param('id') id: string) {
+  findById(@Param('id') { id }: FindOneParams) {
     return this.postsService.findById(+id);
   }
 
   @Get('/slug/:slug')
-  findBySlug(@Param('slug') slug: string) {
+  findBySlug(@Param('slug') { slug }: FindOneBySlugParams) {
     return this.postsService.findBySlug(slug);
   }
 
+  // TODO: Only self articles
   @Patch(':id')
-  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(RoleGuard(Role.Writer))
   update(
-    @Param('id') id: string,
+    @Param('id') { id }: FindOneParams,
     @Body() updatePostDto: UpdatePostDto,
     @Req() request: RequestWithUser,
   ) {
     return this.postsService.update(+id, updatePostDto, request.user);
   }
 
+  // TODO: Only self articles
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @UseGuards(RoleGuard(Role.Writer))
+  remove(@Param('id') { id }: FindOneParams, @Req() request: RequestWithUser) {
     return this.postsService.remove(+id);
   }
 }
