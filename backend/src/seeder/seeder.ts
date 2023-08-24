@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PostsService } from 'src/posts/posts.service';
 import UsersService from 'src/users/users.service';
 import { testAdmin, seedData, testCategories } from './data';
@@ -15,11 +15,17 @@ export default class Seeder {
   async seed() {
     const SEED_CATEGORY_ARTICLES_COUNT = 8;
     const user = await this.userService.createAdmin(testAdmin);
+    const post = await this.postsService.findAll();
 
     for (let i = 0; i < testCategories.length; i++) {
       const createdCategory = await this.categoriesService.createTest({
         name: testCategories[i],
       });
+
+      if (post.length) {
+        throw new Error('There already are posts in database');
+      }
+
       for (let i = 0; i < SEED_CATEGORY_ARTICLES_COUNT; i++) {
         const articleNumber: number = i + 1;
         await this.postsService.create(
@@ -33,25 +39,10 @@ export default class Seeder {
         );
       }
     }
-    //   console.log(category);
-    //   const createdCategory = await this.categoriesService.create({
-    //     name: category
-    //   });
-    //   console.log(createdCategory);
+  }
 
-    //   // for (let i = 0; i < SEED_CATEGORY_ARTICLES_COUNT; i++) {
-    //   //   const articleNumber: number = i + 1;
-    //   //   const post = await this.postsService.create(
-    //   //     {
-    //   //       ...seedData,
-    //   //       title: `${seedData.title} ${createdCategory.name} #${articleNumber}`,
-    //   //       published: true,
-    //   //       categories: [createdCategory.id],
-    //   //     },
-    //   //     user,
-    //   //   );
-    //   //   console.log(post);
-    //   // }
-    // });
+  async seedAdminOnly() {
+    const user = await this.userService.createAdmin(testAdmin);
+    return user;
   }
 }
