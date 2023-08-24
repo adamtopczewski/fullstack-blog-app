@@ -19,6 +19,7 @@ import Category from 'src/categories/entities/category.entity';
         database: configService.get('POSTGRES_DB'),
         entities: [User, Post, Category],
         synchronize: true,
+        autoLoadEntities: true,
       }),
     }),
   ],

@@ -39,6 +39,16 @@ export class CategoriesService {
     }
   }
 
+  async createTest(categoryData: CreateCategoryDto) {
+    const slug = this.generateSlug(categoryData.name);
+    const category = await this.categoryRepository.create({
+      ...categoryData,
+      slug,
+    });
+    await this.categoryRepository.upsert(category, ['name']);
+    return category;
+  }
+
   async update(id: number, categoryData: UpdateCategoryDto) {
     const slug = this.generateSlug(categoryData.name);
     await this.categoryRepository.update(id, { ...categoryData, slug });
